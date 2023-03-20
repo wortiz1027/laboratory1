@@ -20,7 +20,7 @@ jacoco {
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	compileOnly 'org.projectlombok:lombok:1.18.26'
 	annotationProcessor 'org.projectlombok:lombok:1.18.26'
@@ -38,43 +38,44 @@ tasks.named('test') {
 	useJUnitPlatform()
 	finalizedBy jacocoTestReport
 	jacoco {
-		destinationFile = layout.buildDirectory.file('jacoco/jacocoTest.exec').get().asFile
-		classDumpDir = layout.buildDirectory.dir('jacoco/classpathdumps').get().asFile
+		destinationFile = layout.buildDirectory.file('reports/jacoco/jacocoTest.exec').get().asFile
+		classDumpDir = layout.buildDirectory.dir('reports/jacoco/classpathdumps').get().asFile
 	}
+}
+
+tasks.named("bootJar") {
+	archiveClassifier = 'boot'
+	archiveFileName = "clients-services.jar"
 }
 
 jacocoTestReport {
 	dependsOn test
+
 	reports {
 		xml.required = false
 		csv.required = false
-		html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
+		html.outputLocation = layout.buildDirectory.dir('reports/jacoco/html')
+	}
+
+	afterEvaluate {
+		classDirectories.setFrom(files(classDirectories.files.collect {
+			fileTree(dir: it, exclude: 'dev/laboratory/laboratory1/Application**')
+		}))
 	}
 }
 
 jacocoTestCoverageVerification {
 	violationRules {
 		rule {
-			limit {
-				minimum = 0.5
-			}
-		}
-
-		rule {
-			enabled = false
 			element = 'CLASS'
-			includes = ['org.gradle.*']
-
 			limit {
 				counter = 'LINE'
-				value = 'TOTALCOUNT'
-				maximum = 0.3
+				value = 'COVEREDRATIO'
+				minimum = 1.0
 			}
-
 			excludes = [
-					'dev.laboratory.laboratory1.Application'
+					'dev.laboratory.laboratory1.Application.*'
 			]
 		}
-
 	}
 }

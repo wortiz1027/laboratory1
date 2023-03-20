@@ -8,23 +8,27 @@
 # - https://www.rajith.me/2021/04/create-optimized-spring-boot-docker.html
 # - https://github.com/Rajithkonara/rest-localization
 # -----------------------------------------------------------------------
+ARG BUILD_HOME=/application
 
-FROM maven:3.8.4-jdk-11-slim AS generator
-WORKDIR /artifact/
-COPY pom.xml .
-COPY ./src ./src
-RUN mvn clean package -Dmaven.test.skip=true
+FROM gradle:8.0.2-jdk17-alpine AS generator
+ARG BUILD_HOME
+ENV APP_HOME=$BUILD_HOME
+WORKDIR $APP_HOME
+COPY --chown=gradle:gradle build.gradle settings.gradle $APP_HOME/
+COPY --chown=gradle:gradle src $APP_HOME/src
+COPY --chown=gradle:gradle config $APP_HOME/config
+RUN gradle clean build --no-daemon
 
-FROM adoptopenjdk/openjdk11:jdk-11.0.11_9-alpine-slim AS builder
+FROM openjdk:20-ea-17-slim AS builder
 WORKDIR source
 ENV HTTP_PORT=8080 \
     MONITOR_PORT=9090
-ARG JAR_FILE=employee-services.jar
-COPY --from=generator /artifact/target/$JAR_FILE employee-services.jar
+ARG JAR_FILE=clients-services.jar
+COPY --from=generator /build/libs/$JAR_FILE application.jar
 EXPOSE $HTTP_PORT $MONITOR_PORT
-RUN java -Djarmode=layertools -jar employee-services.jar extract
+RUN java -Djarmode=layertools -jar application.jar extract
 
-FROM adoptopenjdk/openjdk11:jre-11.0.11_9-alpine
+FROM openjdk:20-ea-17-slim
 
 WORKDIR app
 
@@ -34,9 +38,9 @@ ARG BUILD_REVISION
 
 LABEL org.opencontainers.image.created=$BUILD_DATE \
 	  org.opencontainers.image.authors="Wilman Ortiz Navarro " \
-	  org.opencontainers.image.url="https://github.com/wortiz1027/employee-services/blob/master/Dockerfile" \
+	  org.opencontainers.image.url="https://github.com/wortiz1027/laboratory1/blob/master/Dockerfile" \
 	  org.opencontainers.image.documentation="" \
-	  org.opencontainers.image.source="https://github.com/wortiz1027/employee-services/blob/master/Dockerfile" \
+	  org.opencontainers.image.source="https://github.com/wortiz1027/laboratory1/blob/master/Dockerfile" \
 	  org.opencontainers.image.version=$BUILD_VERSION \
 	  org.opencontainers.image.revision=$BUILD_REVISION \
 	  org.opencontainers.image.vendor="https://developer.io" \

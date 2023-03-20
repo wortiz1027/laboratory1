@@ -1,0 +1,58 @@
+# +-----------------------------------------------------
+# |         SERVER CONFIG
+# +-----------------------------------------------------
+server:
+  port: 8080
+  servlet:
+    session:
+      cookie:
+        name: UISESSION
+
+# +-----------------------------------------------------
+# |         SPRING CONFIG
+# +-----------------------------------------------------
+spring:
+  application:
+    name: employee-services
+  profiles:
+    active: '@activatedProperties@'
+
+# +-----------------------------------------------------
+# |         SPRING DATASOURCE CONFIG
+# +-----------------------------------------------------
+  datasource:
+    driverClassName: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${DB_CLIENTS_HOST:localhost}:${DB_CLIENTS_PORT:33060}/${DB_CLIENTS_NAME:clientsdb}
+    username: ${DB_CLIENTS_USERNAME:clients}
+    password: ${DB_CLIENTS_PASSWORD:clients2023++}
+
+# +-----------------------------------------------------
+# |         MONITORING CONFIG
+# +-----------------------------------------------------
+management:
+  server:
+    port: 9090
+  endpoint:
+    info:
+      enabled: true
+    shutdown:
+      enabled: true
+    health:
+      probes:
+        enabled: true
+      show-details: always
+      status:
+        http-mapping:
+          down: 500
+          fatal: 503
+          out-of-service: 503
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+  endpoints:
+    web:
+      base-path: /monitor/actuator
+      exposure:
+        include: '*'

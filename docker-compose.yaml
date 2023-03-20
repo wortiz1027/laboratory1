@@ -23,7 +23,7 @@ services:
     ports:
     - 33060:3306
     volumes:
-    - ./src/main/java/resources-databaase/schema.sql:/docker-entrypoint-initdb.d/mysql-clients-schema-v1.sql
+    - ./src/main/resources/database/schema.sql:/docker-entrypoint-initdb.d/mysql-clients-schema-v1.sql
     networks:
     - ntw_databases
 
