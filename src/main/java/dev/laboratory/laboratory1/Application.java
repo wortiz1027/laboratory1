@@ -1,4 +1,4 @@
-package dev.laboratory1.laboratory1;
+package dev.laboratory.laboratory1;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
