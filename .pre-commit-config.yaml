@@ -64,11 +64,14 @@ repos:
   - id: pmd
     exclude: /test/
     args: [-R, .code_quality/ruleset.xml]
+    stages: [commit]
   - id: checkstyle
     exclude: /test/
     args: [-c, .code_quality/checkstyle.xml]
+    stages: [commit]
   - id: cpd
     exclude: /test/
+    stages: [commit]
 
 - repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
   rev: v2.8.0

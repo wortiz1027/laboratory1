@@ -30,6 +30,9 @@ dependencies {
 
 	runtimeOnly 'com.mysql:mysql-connector-j'
 
+	implementation 'org.flywaydb:flyway-core:8.4.4'
+	implementation 'org.flywaydb:flyway-mysql:8.4.4'
+
 	testImplementation "org.testcontainers:testcontainers:1.17.6"
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
