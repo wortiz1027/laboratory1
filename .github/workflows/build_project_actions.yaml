@@ -40,12 +40,12 @@ jobs:
 
     - name: execute-gradle-build
       run: ./gradlew build
-    dependency_check:
+    security:
       needs: setup
       steps:
       - name: dependency-check
         uses: dependency-check/Dependency-Check_Action@main
-        id: dependency-check
+        id: security
         with:
           project: ${{ github.repository }}
           path: .
