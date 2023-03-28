@@ -40,7 +40,7 @@ jobs:
 
     - name: execute-gradle-build
       run: ./gradlew build
-    dependency-check:
+    dependency_check:
       needs: setup
       steps:
       - name: dependency-check
