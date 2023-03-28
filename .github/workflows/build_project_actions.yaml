@@ -40,25 +40,25 @@ jobs:
 
     - name: execute-gradle-build
       run: ./gradlew build
-    security:
-      needs: setup
-      steps:
-      - name: dependency-check
-        uses: dependency-check/Dependency-Check_Action@main
-        id: security
-        with:
-          project: ${{ github.repository }}
-          path: .
-          format: HTML
-          out: reports
-          args: >
-            --failOnCVSS 7
-            --enableRetired
-      - name: Upload Test results
-        uses: actions/upload-artifact@master
-        with:
-          name: dependency-check-report
-          path: ${{ github.workspace }}/reports
+  dependency_check:
+    needs: setup
+    steps:
+    - name: dependency-check
+      uses: dependency-check/Dependency-Check_Action@main
+      id: dependency_check
+      with:
+        project: ${{ github.repository }}
+        path: .
+        format: HTML
+        out: reports
+        args: >
+          --failOnCVSS 7
+          --enableRetired
+    - name: Upload Test results
+      uses: actions/upload-artifact@master
+      with:
+        name: dependency-check-report
+        path: ${{ github.workspace }}/reports
 #    build:
 #        needs: dependency-check
 #    unit-test:
