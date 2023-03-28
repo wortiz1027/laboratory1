@@ -104,3 +104,9 @@ fabric.properties
 
 # Editor-based Rest Client
 .idea/httpRequests
+
+!gradlew
+!gradle
+!build.gradle
+!settings.gradle
+!src/main

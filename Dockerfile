@@ -17,7 +17,7 @@ WORKDIR $APP_HOME
 COPY --chown=gradle:gradle build.gradle settings.gradle $APP_HOME/
 COPY --chown=gradle:gradle src $APP_HOME/src
 COPY --chown=gradle:gradle config $APP_HOME/config
-RUN gradle clean build --no-daemon
+RUN ./gradlew build -x test --no-daemon
 
 FROM openjdk:20-ea-17-slim AS builder
 WORKDIR source
@@ -31,22 +31,6 @@ RUN java -Djarmode=layertools -jar application.jar extract
 FROM openjdk:20-ea-17-slim
 
 WORKDIR app
-
-ARG BUILD_DATE
-ARG BUILD_VERSION
-ARG BUILD_REVISION
-
-LABEL org.opencontainers.image.created=$BUILD_DATE \
-	  org.opencontainers.image.authors="Wilman Ortiz Navarro " \
-	  org.opencontainers.image.url="https://github.com/wortiz1027/laboratory1/blob/master/Dockerfile" \
-	  org.opencontainers.image.documentation="" \
-	  org.opencontainers.image.source="https://github.com/wortiz1027/laboratory1/blob/master/Dockerfile" \
-	  org.opencontainers.image.version=$BUILD_VERSION \
-	  org.opencontainers.image.revision=$BUILD_REVISION \
-	  org.opencontainers.image.vendor="https://developer.io" \
-	  org.opencontainers.image.licenses="" \
-	  org.opencontainers.image.title="Hexagonal Architecture" \
-	  org.opencontainers.image.description="This service try to show us how hexagonal architecture works"
 
 COPY --from=builder source/dependencies/ ./
 COPY --from=builder source/spring-boot-loader/ ./
