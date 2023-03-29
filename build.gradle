@@ -49,7 +49,7 @@ tasks.named('test') {
 
 tasks.named("bootJar") {
 	archiveClassifier = 'boot'
-	archiveFileName = "clients-services.jar"
+	archiveFileName = "laboratory1-services.jar"
 }
 
 jacocoTestReport {

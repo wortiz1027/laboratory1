@@ -20,7 +20,7 @@ FROM openjdk:20-ea-17-slim AS builder
 WORKDIR source
 ENV HTTP_PORT=8080 \
     MONITOR_PORT=9090
-ARG JAR_FILE=clients-services.jar
+ARG JAR_FILE=laboratory1-services.jar
 COPY --from=generator /artifact/build/libs/$JAR_FILE application.jar
 EXPOSE $HTTP_PORT $MONITOR_PORT
 RUN java -Djarmode=layertools -jar application.jar extract
