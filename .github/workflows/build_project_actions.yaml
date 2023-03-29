@@ -39,7 +39,7 @@ jobs:
       matrix:
         os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
-    steps:
+    stepss:
     - name: dependency-check
       uses: dependency-check/Dependency-Check_Action@main
       id: dependency_check
