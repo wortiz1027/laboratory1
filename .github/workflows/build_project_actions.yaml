@@ -9,12 +9,12 @@ on:
   pull_request:
     branches: [develop, main]
 
-env:
-  REGISTRY: ${{ env.REGISTRY }}
-  IMAGE_NAME: ${{ env.IMAGE_NAME }}
-  PROJECT_NAME: ${{ github.repository }}
-  DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
-  DOCKER_TOKEN: ${{secrets.DOCKER_TOKEN}}
+#env:
+#  REGISTRY: ${{ env.REGISTRY }}
+#  IMAGE_NAME: ${{ env.IMAGE_NAME }}
+#  PROJECT_NAME: ${{ github.repository }}
+#  DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
+#  DOCKER_TOKEN: ${{secrets.DOCKER_TOKEN}}
 
 jobs:
   setup:
