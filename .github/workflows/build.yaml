@@ -1,4 +1,4 @@
-name: Build Project
+name: build
 run-name: ${{ github.actor }} Building the laboratory1 services
 
 on:
