@@ -13,52 +13,72 @@ repos:
   rev: v4.4.0
   hooks:
   - id: trailing-whitespace
+    stages: [commit]
   - id: end-of-file-fixer
+    stages: [commit]
   - id: check-yaml
+    stages: [commit]
   - id: check-json
+    stages: [commit]
   - id: check-merge-conflict
-#  - id: detect-aws-credentials
+    stages: [commit]
   - id: detect-private-key
-  - id: forbid-new-submodules
+    stages: [commit]
   - id: mixed-line-ending
     args: [--fix=lf]
+    stages: [commit]
     description: Forces to replace line ending by the UNIX 'lf' character.
   - id: check-added-large-files
     args: [--maxkb=500]
-  #- id: no-commit-to-branch
-  #  args: [--branch, staging]
+    stages: [commit]
+  - id: no-commit-to-branch
+    args: [--branch, staging]
+    stages: [commit]
 
-#- repo: https://github.com/jguttman94/pre-commit-gradle
-#  rev: v0.3.0    # Use the ref you want to point at
-#  hooks:
-#  - id: gradle-check
+- repo: https://github.com/jguttman94/pre-commit-gradle
+  rev: v0.3.0    # Use the ref you want to point at
+  hooks:
+  - id: gradle-check
+    args: [-o, --output]
+    stages: [commit]
+  - id: gradle-build
+    args: [-o, --output]
+    stages: [commit]
 
 - repo: https://github.com/igorshubovych/markdownlint-cli
   rev: v0.33.0
   hooks:
   - id: markdownlint
+    stages: [commit]
 
 - repo: https://github.com/commitizen-tools/commitizen
   rev: v2.42.1
   hooks:
   - id: commitizen
   - id: commitizen-branch
-    stages: [push]
+    stages: [commit-msg, push]
 
-#- repo: https://github.com/gherynos/pre-commit-java
-#  rev: v0.2.3    # Use the ref you want to point at
-#  hooks:
-#  - id: pmd
-#    exclude: /test/
-#  - id: cpd
-#    exclude: /test/
-#  - id: checkstyle
-#    exclude: /test/
+- repo: https://github.com/gherynos/pre-commit-java
+  rev: v0.2.3    # Use the ref you want to point at
+  hooks:
+  - id: pmd
+    exclude: /test/
+    args: [-R, .code_quality/ruleset.xml]
+    stages: [commit]
+  - id: checkstyle
+    exclude: /test/
+    args: [-c, .code_quality/checkstyle.xml]
+    stages: [commit]
+  - id: cpd
+    exclude: /test/
+    stages: [commit]
 
 - repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
   rev: v2.8.0
   hooks:
   - id: pretty-format-java
     args: [--autofix]
+    stages: [commit]
   - id: pretty-format-yaml
     args: [--autofix, --indent, '2']
+    stages: [commit]

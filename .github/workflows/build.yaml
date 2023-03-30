@@ -1,0 +1,139 @@
+name: build
+run-name: ${{ github.actor }} Building the laboratory1 services
+
+on:
+  push:
+    branches: [develop, main]
+    tags:
+    - v[0-9]+.[0-9]+.[0-9]+
+  pull_request:
+    branches: [develop, main]
+
+jobs:
+  setup:
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+    - name: chackout-project-source
+      uses: actions/checkout@v3
+
+    - name: set-jdk-17
+      uses: actions/setup-java@v3
+      with:
+        java-version: 17
+        distribution: adopt
+        architecture: x64
+
+    - name: setup-gradle
+      uses: gradle/gradle-build-action@v2
+      with:
+        gradle-version: 8.0.2
+
+    - name: execute-gradle-build
+      run: ./gradlew build
+  dependency_check:
+    needs: setup
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+    - name: dependency-check
+      uses: dependency-check/Dependency-Check_Action@main
+      id: dependency_check
+      with:
+        project: ${{ github.repository }}
+        path: .
+        format: HTML
+        out: reports
+        args: >
+          --failOnCVSS 7
+          --enableRetired
+    - name: Upload Test results
+      uses: actions/upload-artifact@master
+      with:
+        name: dependency-check-report
+        path: ${{ github.workspace }}/reports
+  unit-test:
+    #needs: dependency-check
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+    - name: chackout-project-source
+      uses: actions/checkout@v3
+
+    - name: set-jdk-17
+      uses: actions/setup-java@v3
+      with:
+        java-version: 17
+        distribution: adopt
+        architecture: x64
+
+    - name: Run Tests
+      run: ./gradlew test
+
+    - name: Run Test Coverage
+      run: ./gradlew jacocoTestReport
+
+    - name: Generate JaCoCo Badge
+      uses: cicirello/jacoco-badge-generator@v2
+      with:
+        generate-branches-badge: true
+        jacoco-csv-file: build/reports/jacoco/test/jacocoTestReport.csv
+
+    - name: Log coverage percentage
+      run: |
+        echo "coverage = ${{ steps.jacoco.outputs.coverage }}"
+        echo "branch coverage = ${{ steps.jacoco.outputs.branches }}"
+
+#    - name: Commit and push the badge (if it changed)
+#      uses: EndBug/add-and-commit@v7
+#      with:
+#        default_author: github_actions
+#        message: commit badge
+#        add: '*.svg'
+
+    - name: Upload JaCoCo coverage report
+      uses: actions/upload-artifact@v2
+      with:
+        name: jacoco-report
+        path: build/reports/jacoco/
+
+#    integration-test:
+#        needs: build
+  publish_docker:
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v3
+    - id: docker-metadata
+      name: docker-metadata
+      uses: docker/metadata-action@v4
+      with:
+        images: ${{ format('{0}/{1}', secrets.DOCKER_USERNAME, vars.IMAGE_NAME) }}
+        tags: |
+          type=semver,pattern={{version}}
+          type=semver,pattern={{major}}.{{minor}}
+          type=raw,value={{sha}},enable=${{ github.ref_type != 'tag' }}
+    - name: docker-login
+      uses: docker/login-action@v2
+      #if: ${{ github.ref_type == 'tag' }}
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_TOKEN }}
+    - name: build-push-docker-image
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        #push: ${{ github.event.base_ref =='refs/heads/main' && github.ref_type == 'tag' && !startsWith(github.ref, 'refs/tags/v0.')}}
+        push: true
+        tags: ${{ steps.docker-metadata.outputs.tags }}
+        labels: ${{ steps.docker-metadata.outputs.labels }}
+
+#    publish-artifact:
