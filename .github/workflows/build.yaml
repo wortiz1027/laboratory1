@@ -76,17 +76,14 @@ jobs:
     - name: Run Tests
       run: ./gradlew test
 
-    - name: Generate JaCoCo Badge
-      id: jacoco
-      uses: cicirello/jacoco-badge-generator@v2
-      with:
-        generate-branches-badge: true
+    - name: Run Test Coverage
+      run: ./gradlew jacocoTestReport
 
     - name: Generate JaCoCo Badge
       uses: cicirello/jacoco-badge-generator@v2
       with:
         generate-branches-badge: true
-        jacoco-csv-file: build/reports/test/jacocoTestReport.csv
+        jacoco-csv-file: build/reports/jacoco/test/jacocoTestReport.csv
 
     - name: Log coverage percentage
       run: |
